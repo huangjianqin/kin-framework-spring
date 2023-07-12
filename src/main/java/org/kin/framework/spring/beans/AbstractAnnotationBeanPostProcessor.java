@@ -87,12 +87,12 @@ public abstract class AbstractAnnotationBeanPostProcessor implements SmartInstan
         //spring merged Annotation
         Annotation mergedAnnotation = AnnotatedElementUtils.getMergedAnnotation(annotatedElement, annotationType);
         if (Objects.nonNull(mergedAnnotation)) {
-            return AnnotationUtils.getAnnotationAttributes(annotatedElement, mergedAnnotation);
+            return AnnotationUtils.getAnnotationAttributes(annotatedElement, mergedAnnotation, false, true);
         }
 
         Annotation annotation = annotatedElement.getAnnotation(annotationType);
         if (Objects.nonNull(annotation)) {
-            return AnnotationUtils.getAnnotationAttributes(annotatedElement, annotation);
+            return AnnotationUtils.getAnnotationAttributes(annotatedElement, annotation, false, true);
         }
         return null;
     }
@@ -103,7 +103,7 @@ public abstract class AbstractAnnotationBeanPostProcessor implements SmartInstan
      * @param beanClass The {@link Class} of Bean
      * @return non-null {@link List}
      */
-    private List<AnnotatedFieldElement> findAnnotationedFieldMetadata(final Class<?> beanClass) {
+    private List<AnnotatedFieldElement> findAnnotatedFieldMetadata(final Class<?> beanClass) {
         List<AnnotatedFieldElement> elements = new LinkedList<>();
         ReflectionUtils.doWithFields(beanClass, field -> {
             for (Class<? extends Annotation> annotationType : getAnnotationTypes()) {
@@ -170,7 +170,7 @@ public abstract class AbstractAnnotationBeanPostProcessor implements SmartInstan
      * 构建被注解元数据, 包含被注解字段和方法的元数据
      */
     private AnnotatedInjectionMetadata buildAnnotatedMetadata(final Class<?> beanClass) {
-        List<AnnotatedFieldElement> annotationedFieldMetadata = findAnnotationedFieldMetadata(beanClass);
+        List<AnnotatedFieldElement> annotationedFieldMetadata = findAnnotatedFieldMetadata(beanClass);
         List<AnnotatedMethodElement> annotatedMethodMetadata = findAnnotatedMethodMetadata(beanClass);
         if (CollectionUtils.isNonEmpty(annotationedFieldMetadata) || CollectionUtils.isNonEmpty(annotatedMethodMetadata)) {
             return new AnnotatedInjectionMetadata(beanClass, annotationedFieldMetadata, annotatedMethodMetadata);
